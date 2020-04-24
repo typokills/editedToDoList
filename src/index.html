@@ -16,7 +16,50 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <script lang="javascript">
+      var contract;
 
+      $(document).ready(function() {
+          if (typeof web3 !== 'undefined') {
+              var sc_address = "{{contractAddress}}";
+              var contractABI = web3.eth.contract(JSON.parse('{{contractABI | safe}}'));
+              var contractInstance = contractABI.at(sc_address);
+              contract = contractInstance;
+              $("a#call_getOwner").click(function(){
+                  contractInstance.getOwner(function(error, result){
+                    if (error) {
+                        alert("Please, connect to the network");
+                        reject(error);
+                    } else {
+                        $("span#owner").text(result);
+                    }
+                  });
+              });
+              $("a#call_getNumber").click(function(){
+                  contractInstance.getNumber(function(error, result){
+                    if (error) {
+                        alert("Please, connect to the network");
+                        reject(error);
+                    } else {
+                        $("span#number").text(result);
+                    }
+                  });
+              });
+              $("a#call_setNumber").click(function(){
+                  var newNumber = $("input#number").val();
+                  contractInstance.setNumber(newNumber, {from:web3.eth.accounts[0]}, function(error, result){
+                    if (error) {
+                        alert("Please, connect to the network");
+                        reject(error);
+                    }
+                  });
+              });
+          }
+          else {
+              alert("Please, install Metamask!");
+          }
+      });
+  </script>
     <style>
       main {
         margin-top: 60px;
@@ -72,7 +115,12 @@
             <ul id="completedTaskList" class="list-unstyled">
             </ul>
           </div>
+          
         </main>
+        <p><span id="number">0</span><p>
+          <footer>
+            <a href="#" id="call_getNumber" class="button special">Add confirmed Idea</a>
+          </footer>
       </div>
     </div>
 
